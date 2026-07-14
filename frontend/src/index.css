@@ -288,7 +288,62 @@ input[type="text"]:focus, select:focus {
   box-shadow: 0 0 0 3px rgba(123, 149, 201, 0.16);
 }
 select option { background: #14161d; }
-input[type="range"] { accent-color: var(--gold); cursor: pointer; }
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: rgba(255, 255, 255, 0.08);
+  outline: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--proponent-a), var(--gold) 50%, var(--opponent-a));
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 2px solid var(--gold);
+  box-shadow: 0 0 10px rgba(201, 162, 75, 0.4);
+  cursor: pointer;
+  margin-top: -5px;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.25);
+  background-color: var(--gold);
+  border-color: #ffffff;
+}
+input[type="range"]::-moz-range-track {
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: linear-gradient(90deg, var(--proponent-a), var(--gold) 50%, var(--opponent-a));
+}
+input[type="range"]::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 0 10px rgba(201, 162, 75, 0.4);
+  cursor: pointer;
+  transition: transform 0.15s ease, background-color 0.15s ease, border-color 0.15s ease;
+}
+input[type="range"]::-moz-range-thumb:hover {
+  transform: scale(1.25);
+  background-color: var(--gold);
+  border-color: #ffffff;
+}
 
 .start-btn {
   width: 100%;
@@ -354,12 +409,57 @@ input[type="range"] { accent-color: var(--gold); cursor: pointer; }
   margin-bottom: 1.4rem;
 }
 
+.invalid-topic-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+  background: rgba(201, 162, 75, 0.1);
+  border: 1px solid rgba(201, 162, 75, 0.35);
+  border-radius: 14px;
+  padding: 0.9rem 1.1rem;
+  margin-bottom: 1.4rem;
+}
+.invalid-topic-icon {
+  font-size: 1.4rem;
+  flex-shrink: 0;
+}
+.invalid-topic-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  color: var(--gold);
+  margin-bottom: 0.15rem;
+}
+.invalid-topic-reason {
+  font-size: 0.87rem;
+  color: var(--text-dim);
+  line-height: 1.4;
+}
+.invalid-topic-close {
+  margin-left: auto;
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  cursor: pointer;
+  padding: 0.2rem 0.4rem;
+  border-radius: 6px;
+  transition: color 0.2s, background 0.2s;
+}
+.invalid-topic-close:hover {
+  color: var(--text-primary);
+  background: rgba(255,255,255,0.07);
+}
+
 /* ---------- Turn cards ---------- */
 .transcript { display: flex; flex-direction: column; gap: 1rem; }
 
 .turn-row { display: flex; align-items: flex-end; gap: 0.6rem; }
 .turn-row.side-proponent { justify-content: flex-start; }
-.turn-row.side-opponent { justify-content: flex-end; flex-direction: row-reverse; }
+.turn-row.side-opponent { justify-content: flex-end; }
+.turn-row.side-opponent .avatar { order: 2; }
+.turn-row.side-opponent .turn-card { order: 1; margin-left: auto; }
 
 .avatar {
   flex-shrink: 0;
@@ -1134,8 +1234,18 @@ details.evidence summary {
   padding: 0 6px;
   font-family: 'Space Grotesk', sans-serif;
   font-weight: 500;
-  font-size: 0.7rem;
+  font-size: 0.72rem;
   color: var(--text-faint);
+}
+.slider-hints span {
+  transition: color 0.25s ease, transform 0.25s ease, text-shadow 0.25s ease;
+  cursor: pointer;
+}
+.slider-hints span.active-hint {
+  color: var(--gold);
+  font-weight: 700;
+  transform: translateY(1px) scale(1.3);
+  text-shadow: 0 0 8px rgba(201, 162, 75, 0.4);
 }
 
 /* How It Works Step Strip */

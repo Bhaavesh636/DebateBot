@@ -25,7 +25,7 @@ from fastapi import FastAPI, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import StreamingResponse
 
-from debate_backend import stream_debate
+from debate_backend import stream_debate, validate_topic
 
 app = FastAPI(title="DebateBot API")
 
@@ -47,6 +47,18 @@ def _debate_event_stream(topic: str, rounds: int, model: str) -> Generator[str, 
     if model:
         os.environ["GROQ_MODEL"] = model
 
+    # ── Step 1: validate the topic before doing any heavy work ──────────
+    try:
+        is_valid, reason = validate_topic(topic)
+    except Exception as e:
+        is_valid, reason = False, f"Validation error: {e}"
+
+    if not is_valid:
+        yield _sse("invalid_topic", {"message": reason})
+        yield _sse("done", {})
+        return
+
+    # ── Step 2: run the debate ───────────────────────────────────────────
     try:
         for update in stream_debate(topic, max_rounds=rounds):
             for node_name, partial_state in update.items():

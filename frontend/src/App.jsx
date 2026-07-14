@@ -715,6 +715,7 @@ export default function App() {
   const [verdictVisible, setVerdictVisible] = useState(false)
   const [status, setStatus] = useState('idle') // idle | running | done | error
   const [errorMsg, setErrorMsg] = useState('')
+  const [invalidTopic, setInvalidTopic] = useState(null)
   const esRef = useRef(null)
   const recordedRef = useRef(false)
   const verdictTimerRef = useRef(null)
@@ -764,6 +765,7 @@ export default function App() {
     setVerdict(null)
     setVerdictVisible(false)
     setErrorMsg('')
+    setInvalidTopic(null)
     setStatus('running')
     recordedRef.current = false
     clearTimeout(verdictTimerRef.current)
@@ -775,6 +777,12 @@ export default function App() {
 
     es.addEventListener('turn', (e) => setTurns((prev) => [...prev, JSON.parse(e.data)]))
     es.addEventListener('verdict', (e) => setVerdict(JSON.parse(e.data).verdict))
+    es.addEventListener('invalid_topic', (e) => {
+      const data = JSON.parse(e.data)
+      setInvalidTopic(data.message || 'That doesn\'t look like a debate topic.')
+      setStatus('idle')
+      es.close()
+    })
     es.addEventListener('done', () => { setStatus('done'); es.close() })
     es.addEventListener('error', (e) => {
       let msg = 'Connection error — is the backend server running on :8000?'
@@ -872,12 +880,11 @@ export default function App() {
               <div className="slider-container">
                 <input type="range" min="1" max="6" value={rounds} onChange={(e) => setRounds(Number(e.target.value))} />
                 <div className="slider-hints">
-                  <span>1</span>
-                  <span>2</span>
-                  <span>3</span>
-                  <span>4</span>
-                  <span>5</span>
-                  <span>6</span>
+                  {[1, 2, 3, 4, 5, 6].map((num) => (
+                    <span key={num} className={rounds === num ? 'active-hint' : ''}>
+                      {num}
+                    </span>
+                  ))}
                 </div>
               </div>
             </div>
@@ -919,6 +926,25 @@ export default function App() {
             {errorMsg && (
               <motion.div className="error-banner" initial={{ opacity: 0, y: -8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}>
                 {errorMsg}
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          <AnimatePresence>
+            {invalidTopic && (
+              <motion.div
+                className="invalid-topic-banner"
+                initial={{ opacity: 0, scale: 0.96, y: -8 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.96 }}
+                transition={{ type: 'spring', stiffness: 400, damping: 28 }}
+              >
+                <span className="invalid-topic-icon">⚠️</span>
+                <div>
+                  <div className="invalid-topic-title">Not a debate topic</div>
+                  <div className="invalid-topic-reason">{invalidTopic}</div>
+                </div>
+                <button className="invalid-topic-close" onClick={() => setInvalidTopic(null)}>✕</button>
               </motion.div>
             )}
           </AnimatePresence>

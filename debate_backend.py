@@ -34,6 +34,36 @@ from ddgs import DDGS
 
 
 # ---------------------------------------------------------------------
+# 0. Topic validator  (fast, cheap — always uses the 8B model)
+# ---------------------------------------------------------------------
+def validate_topic(topic: str) -> tuple[bool, str]:
+    """Return (is_valid, reason).
+
+    Uses the smallest/fastest model so this check is nearly free.
+    Returns True if the input looks like a debatable proposition, False otherwise.
+    """
+    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
+    prompt = (
+        "You are a debate topic validator. Your ONLY job is to decide whether "
+        "the user's input is a genuine debate topic — something two people could "
+        "meaningfully argue opposing sides of.\n\n"
+        "Valid examples: \"Should schools ban smartphones?\", "
+        "\"Is nuclear energy the future?\", \"Does social media harm democracy?\"\n\n"
+        "Invalid examples: \"hello\", \"write me a poem\", \"2+2\", "
+        "\"what time is it\", \"banana\", random gibberish.\n\n"
+        f"User input: \"{topic}\"\n\n"
+        "Reply with EXACTLY one line:\n"
+        "VALID or INVALID: <one short sentence explaining why if INVALID>"
+    )
+    response = llm.invoke(prompt).content.strip()
+    if response.upper().startswith("VALID"):
+        return True, ""
+    # Extract the reason after "INVALID:"
+    reason = response.partition(":")[2].strip() or "That doesn't look like a debate topic."
+    return False, reason
+
+
+# ---------------------------------------------------------------------
 # 1. Evidence tool
 # ---------------------------------------------------------------------
 def evidence_search(query: str, max_results: int = 2) -> List[Dict[str, str]]:
