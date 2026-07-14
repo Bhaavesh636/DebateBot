@@ -6,7 +6,12 @@ import {
 } from 'lucide-react'
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
-const MODELS = ['llama-3.3-70b-versatile', 'llama-3.1-8b-instant']
+const MODELS = [
+  'llama-3.3-70b-versatile',
+  'llama-3.1-8b-instant',
+  'meta-llama/llama-4-scout-17b-16e-instruct',
+  'openai/gpt-oss-120b'
+]
 const HISTORY_KEY = 'debatebot_history'
 const QUICK_TOPICS = [
   'Should schools ban smartphones for students under 16?',
@@ -848,19 +853,32 @@ export default function App() {
                   setTopic(e.target.value)
                   setShowTooltip(false)
                 }}
-                placeholder="e.g. Should schools ban smartphones for students under 16?"
+                placeholder=""
               />
             </div>
             <div className="field-row">
               <div className="field">
                 <label>Model</label>
                 <select value={model} onChange={(e) => setModel(e.target.value)}>
-                  {MODELS.map((m) => <option key={m} value={m}>{m}</option>)}
+                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Thorough & Detailed) — llama-3.3-70b-versatile</option>
+                  <option value="llama-3.1-8b-instant">Llama 3.1 8B (Instant & Concise) — llama-3.1-8b-instant</option>
+                  <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Quick MoE & Balanced) — meta-llama/llama-4-scout-17b</option>
+                  <option value="openai/gpt-oss-120b">GPT OSS 120B (Heavy Reasoning & Deep) — openai/gpt-oss-120b</option>
                 </select>
               </div>
-              <div className="field">
-                <label>Rounds: {rounds}</label>
+            </div>
+            <div className="field" style={{ marginTop: '0.6rem' }}>
+              <label>Rounds: {rounds}</label>
+              <div className="slider-container">
                 <input type="range" min="1" max="6" value={rounds} onChange={(e) => setRounds(Number(e.target.value))} />
+                <div className="slider-hints">
+                  <span>1</span>
+                  <span>2</span>
+                  <span>3</span>
+                  <span>4</span>
+                  <span>5</span>
+                  <span>6</span>
+                </div>
               </div>
             </div>
             <div className="start-btn-wrapper">
@@ -905,6 +923,40 @@ export default function App() {
             )}
           </AnimatePresence>
 
+          {turns.length === 0 && (
+            <div className="how-it-works-strip">
+              <div className="how-step">
+                <span className="step-num">1</span>
+                <div className="step-content">
+                  <div className="step-title">Enter Topic</div>
+                  <div className="step-desc">Type your custom question or roll a random topic above.</div>
+                </div>
+              </div>
+              <div className="step-connector">➔</div>
+              <div className="how-step">
+                <span className="step-num">2</span>
+                <div className="step-content">
+                  <div className="step-title">Agents Debate</div>
+                  <div className="step-desc">Two AI agents argue fixed sides using real search citations.</div>
+                </div>
+              </div>
+              <div className="step-connector">➔</div>
+              <div className="how-step">
+                <span className="step-num">3</span>
+                <div className="step-content">
+                  <div className="step-title">Judge Decides</div>
+                  <div className="step-desc">An impartial judge evaluates each round & declares the winner.</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {turns.length === 0 && status === 'running' && (
+            <div className="cold-start-note">
+              ℹ The backend server is spinning up... Please wait 30–60 seconds.
+            </div>
+          )}
+
           <section className="transcript">
             <AnimatePresence mode="popLayout">
               {turns.map((t, i) => <TurnCard key={i} turn={t} />)}
@@ -935,7 +987,7 @@ export default function App() {
 
       <footer className="site-footer">
         <div className="credit">
-          DebateBot &middot; Built by <a href="https://github.com/Bhaavesh636" target="_blank" rel="noopener noreferrer">Bhaavesh</a>
+          DebateBot &middot; Built by <a href="https://github.com/Bhaavesh636" target="_blank" rel="noopener noreferrer">Janapareddi Bhaavesh Sai Mohan</a>
         </div>
         <div className="footer-socials">
           <a href="https://github.com/Bhaavesh636" target="_blank" rel="noopener noreferrer"><Github size={16} /></a>
