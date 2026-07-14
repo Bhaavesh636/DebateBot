@@ -13,7 +13,83 @@ const QUICK_TOPICS = [
   'Should a four-day work week become standard?',
   'Is remote work better than office work for software teams?',
   'Should college education be free for all students?',
+  'Should artificial intelligence be allowed to create art and write books?',
+  'Will social media do more harm than good to future generations?',
+  'Should space exploration be funded by governments or left to private companies?',
+  'Is nuclear energy the best alternative to fossil fuels?',
+  'Should public transport be completely free for everyone?',
+  'Does testing cosmetics and medicines on animals justify the scientific benefits?',
+  'Should video games be considered a professional sport?',
+  'Should voting in national elections be mandatory for all citizens?',
+  'Is online learning as effective as traditional classroom learning?',
+  'Should cryptocurrency replace traditional fiat currency?',
+  'Should fast food advertising be banned or heavily restricted?',
+  'Is exploration of the deep ocean more important than space exploration?',
+  'Should genetic editing of human embryos be permitted for disease prevention?',
+  'Will automation and robots lead to permanent mass unemployment?',
+  'Should homework be banned in primary schools?',
+  'Is privacy completely dead in the digital age?',
+  'Should public security cameras with facial recognition be banned?',
+  'Should animal zoos be banned worldwide?',
+  'Is cash obsolete in today\'s digital economy?',
+  'Should the minimum voting age be lowered to 16?',
+  'Does excessive screen time permanently damage cognitive development?'
 ]
+
+function TopicRoller({ onSelectTopic }) {
+  const [topicIndex, setTopicIndex] = useState(0)
+  const [displayedText, setDisplayedText] = useState('')
+  const [isDeleting, setIsDeleting] = useState(false)
+
+  useEffect(() => {
+    let timer
+    const targetText = QUICK_TOPICS[topicIndex]
+
+    if (isDeleting) {
+      if (displayedText.length > 0) {
+        timer = setTimeout(() => {
+          setDisplayedText(prev => prev.slice(0, -1))
+        }, 15)
+      } else {
+        setIsDeleting(false)
+        setTopicIndex(prev => {
+          let next = prev
+          while (next === prev) {
+            next = Math.floor(Math.random() * QUICK_TOPICS.length)
+          }
+          return next
+        })
+      }
+    } else {
+      if (displayedText.length < targetText.length) {
+        timer = setTimeout(() => {
+          setDisplayedText(targetText.slice(0, displayedText.length + 1))
+        }, 30)
+      }
+    }
+
+    return () => clearTimeout(timer)
+  }, [displayedText, isDeleting, topicIndex])
+
+  const handleReroll = (e) => {
+    e.stopPropagation()
+    setIsDeleting(true)
+  }
+
+  return (
+    <div className="topic-roller-box" onClick={() => onSelectTopic(displayedText)}>
+      <div className="topic-roller-content">
+        <span className="topic-roller-text">
+          {displayedText}
+          <span className="cursor-active">&#9612;</span>
+        </span>
+      </div>
+      <button className="topic-reroll-btn" onClick={handleReroll} title="Get another topic">
+        <Repeat size={16} />
+      </button>
+    </div>
+  )
+}
 
 function friendlySourceName(title, url) {
   const t = (title || '').trim()
@@ -752,17 +828,11 @@ export default function App() {
           </motion.div>
 
           <div className="quick-picks">
-            <div className="quick-picks-label">Try one of these</div>
-            <div className="quick-picks-row">
-              {QUICK_TOPICS.map((t) => (
-                <button key={t} className="quick-pick-pill" onClick={() => {
-                  setTopic(t)
-                  setShowTooltip(false)
-                }}>
-                  {t.length > 40 ? t.slice(0, 40) + '…' : t}
-                </button>
-              ))}
-            </div>
+            <div className="quick-picks-label">Try this.....</div>
+            <TopicRoller onSelectTopic={(t) => {
+              setTopic(t)
+              setShowTooltip(false)
+            }} />
           </div>
 
           <motion.section
