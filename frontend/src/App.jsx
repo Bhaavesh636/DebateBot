@@ -8,7 +8,6 @@ import {
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const MODELS = [
   'llama-3.3-70b-versatile',
-  'llama-3.1-8b-instant',
   'meta-llama/llama-4-scout-17b-16e-instruct',
   'openai/gpt-oss-120b'
 ]
@@ -869,7 +868,6 @@ export default function App() {
                 <label>Model</label>
                 <select value={model} onChange={(e) => setModel(e.target.value)}>
                   <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Thorough & Detailed) — llama-3.3-70b-versatile</option>
-                  <option value="llama-3.1-8b-instant">Llama 3.1 8B (Instant & Concise) — llama-3.1-8b-instant</option>
                   <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Quick MoE & Balanced) — meta-llama/llama-4-scout-17b</option>
                   <option value="openai/gpt-oss-120b">GPT OSS 120B (Heavy Reasoning & Deep) — openai/gpt-oss-120b</option>
                 </select>

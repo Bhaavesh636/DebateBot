@@ -39,10 +39,10 @@ from ddgs import DDGS
 def validate_topic(topic: str) -> tuple[bool, str]:
     """Return (is_valid, reason).
 
-    Uses the smallest/fastest model so this check is nearly free.
-    Returns True if the input looks like a debatable proposition, False otherwise.
+    Uses the currently active model (same one selected for the debate)
+    so it never hits a 'model not found' error.
     """
-    llm = ChatGroq(model="llama-3.1-8b-instant", temperature=0)
+    llm = _llm(temperature=0)  # reuse the same model the debate will use
     prompt = (
         "You are a debate topic validator. Your ONLY job is to decide whether "
         "the user's input is a genuine debate topic — something two people could "
