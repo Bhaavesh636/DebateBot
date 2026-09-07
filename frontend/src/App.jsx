@@ -7,9 +7,10 @@ import {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000'
 const MODELS = [
-  'llama-3.3-70b-versatile',
-  'meta-llama/llama-4-scout-17b-16e-instruct',
-  'openai/gpt-oss-120b'
+  'openai/gpt-oss-120b',
+  'openai/gpt-oss-20b',
+  'groq/compound',
+  'gemini/gemini-3.6-flash'
 ]
 const HISTORY_KEY = 'debatebot_history'
 const QUICK_TOPICS = [
@@ -867,9 +868,10 @@ export default function App() {
               <div className="field">
                 <label>Model</label>
                 <select value={model} onChange={(e) => setModel(e.target.value)}>
-                  <option value="llama-3.3-70b-versatile">Llama 3.3 70B (Thorough & Detailed) — llama-3.3-70b-versatile</option>
-                  <option value="meta-llama/llama-4-scout-17b-16e-instruct">Llama 4 Scout (Quick MoE & Balanced) — meta-llama/llama-4-scout-17b</option>
-                  <option value="openai/gpt-oss-120b">GPT OSS 120B (Heavy Reasoning & Deep) — openai/gpt-oss-120b</option>
+                  <option value="openai/gpt-oss-120b">GPT OSS 120B (Groq — Recommended, High Quota)</option>
+                  <option value="openai/gpt-oss-20b">GPT OSS 20B (Groq — Ultra Fast)</option>
+                  <option value="groq/compound">Groq Compound (Groq)</option>
+                  <option value="gemini/gemini-3.6-flash">Google Gemini 3.6 Flash (20 RPD Free Tier Limit)</option>
                 </select>
               </div>
             </div>

@@ -43,6 +43,15 @@ def _sse(event: str, data: dict) -> str:
     return f"event: {event}\ndata: {json.dumps(data)}\n\n"
 
 
+def _format_error(e: Exception) -> str:
+    err_str = str(e)
+    if "429" in err_str or "RESOURCE_EXHAUSTED" in err_str or "quota" in err_str.lower():
+        return "API Rate Limit Exceeded (429): Free tier quota limit reached for this model. Please wait a few seconds or switch to another model like GPT OSS 120B (Groq)."
+    if "404" in err_str or "NOT_FOUND" in err_str:
+        return "Model Unavailable (404): The selected model is not available. Please pick another model from the dropdown."
+    return err_str
+
+
 def _debate_event_stream(topic: str, rounds: int, model: str) -> Generator[str, None, None]:
     if model:
         os.environ["GROQ_MODEL"] = model
@@ -51,7 +60,7 @@ def _debate_event_stream(topic: str, rounds: int, model: str) -> Generator[str, 
     try:
         is_valid, reason = validate_topic(topic)
     except Exception as e:
-        is_valid, reason = False, f"Validation error: {e}"
+        is_valid, reason = False, _format_error(e)
 
     if not is_valid:
         yield _sse("invalid_topic", {"message": reason})
@@ -68,7 +77,7 @@ def _debate_event_stream(topic: str, rounds: int, model: str) -> Generator[str, 
                     yield _sse("verdict", {"verdict": partial_state["verdict"]})
         yield _sse("done", {})
     except Exception as e:
-        yield _sse("error", {"message": str(e)})
+        yield _sse("error", {"message": _format_error(e)})
 
 
 @app.get("/api/debate")
